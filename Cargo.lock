@@ -686,6 +686,8 @@ dependencies = [
  "futures",
  "futures-util",
  "rust-bert",
+ "serde",
+ "serde_json",
  "tokio",
  "tokio-tungstenite",
 ]
