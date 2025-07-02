@@ -10,8 +10,8 @@ use rust_bert::pipelines::keywords_extraction::{
 use tokio::{
 	sync::oneshot::channel,
 	task::{
-		self,
 		JoinHandle,
+		self,
 	},
 };
 
@@ -37,8 +37,8 @@ impl KeywordExtractor {
 					.map(String::as_str)
 					.collect();
 
-				if let Some(entities) = model.predict(&input).ok() {
-					sender.send(entities).ok();
+				if let Some(keywords) = model.predict(&input).ok() {
+					sender.send(keywords).ok();
 				}
 			}
 		}

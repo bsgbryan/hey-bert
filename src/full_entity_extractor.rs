@@ -10,8 +10,8 @@ use rust_bert::pipelines::ner::{
 use tokio::{
 	sync::oneshot::channel,
 	task::{
-		self,
 		JoinHandle,
+		self,
 	},
 };
 
