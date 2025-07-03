@@ -6,14 +6,14 @@ use serde::{
 use crate::action::Action;
 
 #[derive(Serialize, Deserialize)]
-pub struct Input<'a> {
+pub struct Input {
 	pub action: Action,
-	pub uuid: &'a str,
+	pub uuid: String,
 
-	content: &'a str,
+	content: String,
 }
 
-impl<'a> Input<'a> {
+impl Input {
 	pub fn split(&self) -> Vec<String> {
 		self.content
 			.split("\n\n")

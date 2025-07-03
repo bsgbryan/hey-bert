@@ -14,16 +14,11 @@ use tokio::net::{
 use tokio_tungstenite::tungstenite::Message;
 
 use hey_bert::{
-	action::{
-		Action::Extract,
-		Extract::{
-			Entities,
-			Keywords,
-		},
-	},
-	input::Input,
+	action::Action,
 	full_entity_extractor::FullEntityExtractor,
+	input::Input,
 	keyword_extractor::KeywordExtractor,
+	out::log,
 	output::Output,
 };
 
@@ -58,24 +53,22 @@ async fn handle_connection(stream: TcpStream) {
 				 let Some(input) = serde_json::from_str::<Input>(body).ok()
 			{
 				match &input.action {
-					Extract(e) => {
-						match e {
-							Entities => {
-								if let Some(entities) = entity_extractor.execute(input.split()).await {
-									let output = Output::new(Entities, input.uuid, entities);
-					        if let Some(out) = serde_json::to_string(&output).ok() &&
-					        	 let Err 	(e)	 = ws_stream.send(Message::Text(out.into())).await
-					        { eprintln!("Got error extracting entities: {e:#?}"); }
-								}
-							}
-							Keywords => {
-								if let Some(keywords) = keyword_extractor.execute(input.split()).await {
-									let output = Output::new(Keywords, input.uuid, keywords);
-					        if let Some(out) = serde_json::to_string(&output).ok() &&
-					        	 let Err	(e)  = ws_stream.send(Message::Text(out.into())).await
-					        { eprintln!("Got error extracting keywords: {e:#?}"); }
-								}
-							}
+					Action::ExtractEntities => {
+						log("e");
+						if let Some(entities) = entity_extractor.execute(input.split()).await {
+							let output = Output::new(Action::ExtractEntities, input.uuid, entities);
+							log("+");
+			        if let Some(out) = serde_json::to_string(&output).ok() &&
+			        	 let Err 	(e)	 = ws_stream.send(Message::Text(out.into())).await
+			        { eprintln!("Got error extracting entities: {e:#?}"); }
+						}
+					}
+					Action::ExtractKeywords => {
+						if let Some(keywords) = keyword_extractor.execute(input.split()).await {
+							let output = Output::new(Action::ExtractKeywords, input.uuid, keywords);
+			        if let Some(out) = serde_json::to_string(&output).ok() &&
+			        	 let Err	(e)  = ws_stream.send(Message::Text(out.into())).await
+			        { eprintln!("Got error extracting keywords: {e:#?}"); }
 						}
 					}
 				}

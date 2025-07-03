@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{
 	Deserialize,
 	Serialize,
@@ -5,11 +7,15 @@ use serde::{
 
 #[derive(Serialize, Deserialize)]
 pub enum Action {
-	Extract(Extract),
+	ExtractEntities,
+	ExtractKeywords,
 }
 
-#[derive(Serialize, Deserialize)]
-pub enum Extract {
-	Entities,
-	Keywords,
+impl Display for Action {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match self {
+			Action::ExtractEntities => writeln!(f, "Action::ExtractEntities"),
+			Action::ExtractKeywords => writeln!(f, "Action::ExtractKeywords"),
+		}
+	}
 }
