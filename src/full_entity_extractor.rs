@@ -32,14 +32,21 @@ impl FullEntityExtractor {
 	fn runner(receiver: Receiver<EntityMessage>) {
 		if let Ok(model) = NERModel::new(Default::default()) {
 			while let Ok((paragraphs, sender)) = receiver.recv() {
-				let input: Vec<&str> = paragraphs
+  			let mut output = vec![];
+				let mut input = paragraphs
 					.iter()
 					.map(String::as_str)
-					.collect();
+					.into_iter();
 
-				let entities = model.predict_full_entities(&input);
+				let initial: Vec<&str> = input.by_ref().take(50).collect();
+				output.append(&mut model.predict_full_entities(&initial));
 
-				sender.send(entities).ok();
+				let leftovers: Vec<&str> = input.collect();
+				if leftovers.len() > 0 {
+				  output.append(&mut model.predict_full_entities(&leftovers));
+				}
+
+				sender.send(output).ok();
 			}
 		}
 	}
